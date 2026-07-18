@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STALKER PDA - Zone Guide</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #0a0a0a url('Assets/Emission.jpg') no-repeat center center fixed;
+            background-size: cover;
+            font-family: 'Courier New', monospace;
+            color: #00ff00;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .pda-frame {
+            max-width: 980px;
+            margin: 30px auto;
+            background: rgba(20, 20, 20, 0.97);
+            border: 18px solid #333;
+            box-shadow: 0 0 60px rgba(0, 255, 0, 0.4);
+            overflow: hidden;
+        }
+
+        .tabs { display: flex; background: #111; }
+        .tab {
+            padding: 12px 25px;
+            cursor: pointer;
+            border-right: 2px solid #222;
+        }
+        .tab.active { background: #1f1f1f; color: #0f0; text-shadow: 0 0 8px #0f0; }
+
+        .content { height: 520px; padding: 15px; overflow: hidden; display: flex; flex-direction: column; }
+
+        /* === GUIDE TAB - 3 Columns === */
+        .guide-container {
+            display: flex;
+            height: 100%;
+            gap: 10px;
+        }
+        .guide-left {
+            width: 180px;
+            background: #1a1a1a;
+            padding: 10px;
+            overflow-y: auto;
+        }
+        .guide-middle {
+            width: 260px;
+            background: #222;
+            padding: 10px;
+            overflow-y: auto;
+        }
+        .guide-right {
+            flex: 1;
+            background: #1f1f1f;
+            padding: 15px;
+            overflow-y: auto;
+        }
+
+        .list-item {
+            padding: 6px 8px;
+            cursor: pointer;
+        }
+        .list-item:hover, .list-item.active {
+            background: #0a0a0a;
+            color: #0f0;
+        }
+
+        .preview-img {
+            width: 100%;
+            border: 2px solid #444;
+            margin-bottom: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="pda-frame">
+        <!-- Header & Tabs (same as before) -->
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab(0)">Statistics</div>
+            <div class="tab active" onclick="switchTab(1)">Guide</div>
+            <div class="tab active" onclick="switchTab(2)">Messages</div>
+	    <div class="tab active" onclick="switchTab(3)">Relations</div>
+        </div>
+
+        <!-- Guide Tab Content -->
+<div id="tab-1" class="content">
+    <div class="guide-container">
+        
+        <!-- LEFT: Categories -->
+        <div class="guide-left">
+            <strong>Notes</strong><br><br>
+            <div onclick="loadCategory('anomalies')" class="list-item active">Anomalies</div>
+            <div onclick="loadCategory('mutants')" class="list-item">Mutants</div>
+            <div onclick="loadCategory('factions')" class="list-item">Factions</div>
+            <div onclick="loadCategory('artefacts')" class="list-item">Artefacts</div>
+            <div onclick="loadCategory('achievements')" class="list-item">Achievements</div>
+        </div>
+
+        <!-- MIDDLE: Dynamic Entries -->
+        <div class="guide-middle" id="entries-list">
+            <!-- Populated by JavaScript -->
+        </div>
+
+        <!-- RIGHT: Detail View -->
+        <div class="guide-right" id="entry-detail">
+            <img src="" class="preview-img" id="detail-image" alt="">
+            <strong id="detail-name"></strong><br>
+            <small id="detail-type"></small>
+            <p id="detail-desc"></p>
+        </div>
+    </div>
+</div>
+
+    <script>
+        const data = {
+    anomalies: [
+        { name: "Burner", type: "Thermal", desc: "Creates intense heat that can ignite anything nearby.", img: "https://via.placeholder.com/500x280/ff8800/000?text=Burner" },
+        { name: "Electro", type: "Electrical", desc: "Discharges electricity when disturbed.", img: "https://via.placeholder.com/500x280/00aaff/000?text=Electro" },
+        { name: "Emission", type: "Global", desc: "Massive radiation blowout across the Zone.", img: "https://via.placeholder.com/500x280/aa0000/fff?text=Emission" },
+        { name: "Fruit Punch", type: "Chemical", desc: "Corrosive anomaly that dissolves organic matter.", img: "https://via.placeholder.com/500x280/ff00ff/000?text=Fruit+Punch" },
+        { name: "Liquid Gold", type: "Chemical", desc: "Raises body temperature to lethal levels.", img: "https://via.placeholder.com/500x280/ffcc00/000?text=Liquid+Gold" }
+    ],
+    mutants: [
+        { name: "Bloodsucker", type: "Mutant", desc: "Hematophagous predator with optic camouflage.", img: "https://via.placeholder.com/500x280/880000/fff?text=Bloodsucker" },
+        { name: "Boar", type: "Mutant", desc: "Aggressive mutated pig with tough hide.", img: "https://via.placeholder.com/500x280/664422/fff?text=Boar" }
+    ],
+    factions: [
+        { name: "Loners", type: "Faction", desc: "Independent stalkers surviving in the Zone.", img: "https://via.placeholder.com/500x280/888888/000?text=Loners" },
+        { name: "Duty", type: "Faction", desc: "Military-style group dedicated to destroying the Zone.", img: "https://via.placeholder.com/500x280/0044aa/fff?text=Duty" }
+    ],
+    artefacts: [
+        { name: "Moonlight", type: "Artefact", desc: "Found in Electro anomalies.", img: "https://via.placeholder.com/500x280/ccccff/000?text=Moonlight" }
+    ],
+    achievements: [
+        { name: "Mechanized Warfare", type: "Achievement", desc: "Learned field maintenance from technician.", img: "https://via.placeholder.com/500x280/00ff88/000?text=Achievement" }
+    ]
+};
+
+function loadCategory(category) {
+    // Highlight active category
+    document.querySelectorAll('.guide-left .list-item').forEach(item => {
+        item.classList.remove('active');
+        if (item.textContent.toLowerCase() === category) item.classList.add('active');
+    });
+
+    const list = document.getElementById('entries-list');
+    list.innerHTML = '';
+
+    data[category].forEach(entry => {
+        const div = document.createElement('div');
+        div.className = 'list-item';
+        div.textContent = entry.name;
+        div.onclick = () => showDetail(entry);
+        list.appendChild(div);
+    });
+
+    // Show first item automatically
+    if (data[category].length > 0) showDetail(data[category][0]);
+}
+
+function showDetail(entry) {
+    document.getElementById('detail-image').src = entry.img;
+    document.getElementById('detail-name').textContent = entry.name;
+    document.getElementById('detail-type').textContent = "Type: " + entry.type;
+    document.getElementById('detail-desc').textContent = entry.desc;
+}
+
+// Load Anomalies by default when page loads
+window.onload = () => loadCategory('anomalies');
+    </script>
+</body>
+</html>
