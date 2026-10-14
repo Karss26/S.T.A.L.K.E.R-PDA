@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STALKER PDA - Zone Guide</title>
+    <title>STALKER PDA</title>
     <style>
         body {
             margin: 0;
-            padding: 20px;
+            padding: 10px;
             background: #0a0a0a url('Assets/Emission.jpg') no-repeat center center fixed;
             background-size: cover;
-            font-family: 'Courier New', monospace;
+            font-family: 'Consolas', monospace;
             color: #00ff00;
             height: 100vh;
             overflow: hidden;
@@ -18,159 +18,461 @@
 
         .pda-frame {
             max-width: 980px;
-            margin: 30px auto;
+            margin: 0px auto;
             background: rgba(20, 20, 20, 0.97);
             border: 18px solid #333;
-            box-shadow: 0 0 60px rgba(0, 255, 0, 0.4);
+            box-shadow: 0 0 90px rgba(0, 255, 0, 0.4);
             overflow: hidden;
         }
 
-        .tabs { display: flex; background: #111; }
+        .tabs { 
+            display: flex; 
+            background: #111; 
+            border-bottom: 3px solid #0f0;
+        }
         .tab {
-            padding: 12px 25px;
+            padding: 12px 22px;
             cursor: pointer;
             border-right: 2px solid #222;
+            transition: 0.2s;
         }
-        .tab.active { background: #1f1f1f; color: #0f0; text-shadow: 0 0 8px #0f0; }
+        .tab:hover, .tab.active { 
+            background: #1f1f1f; 
+            color: #0f0; 
+            text-shadow: 0 0 8px #0f0; 
+        }
 
-        .content { height: 520px; padding: 15px; overflow: hidden; display: flex; flex-direction: column; }
+        .content { 
+            height: 430px; 
+            padding: 15px; 
+            overflow: hidden; 
+        }
 
-        /* === GUIDE TAB - 3 Columns === */
+        /* Guide Tab */
         .guide-container {
             display: flex;
             height: 100%;
             gap: 10px;
         }
-        .guide-left {
-            width: 180px;
-            background: #1a1a1a;
-            padding: 10px;
-            overflow-y: auto;
-        }
-        .guide-middle {
-            width: 260px;
-            background: #222;
-            padding: 10px;
-            overflow-y: auto;
-        }
-        .guide-right {
-            flex: 1;
-            background: #1f1f1f;
-            padding: 15px;
-            overflow-y: auto;
-        }
+        .guide-left { width: 180px; background: #1a1a1a; padding: 10px; overflow-y: auto; }
+        .guide-middle { width: 260px; background: #222; padding: 10px; overflow-y: auto; }
+        .guide-right { flex: 1; background: #1f1f1f; padding: 15px; overflow-y: auto; }
 
         .list-item {
             padding: 6px 8px;
             cursor: pointer;
+            margin-bottom: 2px;
         }
         .list-item:hover, .list-item.active {
             background: #0a0a0a;
             color: #0f0;
         }
 
-        .preview-img {
-            width: 100%;
-            border: 2px solid #444;
-            margin-bottom: 12px;
-        }
+        .preview-img { width: 100%; border: 2px solid #444; margin-bottom: 12px; }
+#detail-desc {
+    white-space: pre-wrap;
+    line-height: 1.45;
+    margin-top: 10px;
+    color: #b0ffb0;
+}
+        /* Relations Table */
+#relationsTable th, #relationsTable td {
+    padding: 7px 6px;
+    border: 1px solid #333;
+    white-space: nowrap;
+}
+#relationsTable th {
+    background: #111;
+    color: #0f0;
+    font-weight: normal;
+}
+#relationsTable td:first-child {
+    text-align: left;
+    background: #1a1a1a;
+    color: #ccc;
+    font-weight: bold;
+}
+.rel-max, .rel-major, .rel-friend { color: #00ff00; }
+.rel-moderate, .rel-minor, .rel-neutral { color: #ffdd00; }
+.rel-minimal, .rel-enemy { color: #ff4444; }
     </style>
 </head>
 <body>
     <div class="pda-frame">
-        <!-- Header & Tabs (same as before) -->
+        <!-- Header -->
+        <div style="background:#111; padding:10px 20px; display:flex; justify-content:space-between; border-bottom:4px solid #0f0;">
+            <div><strong>S.T.A.L.K.E.R. PDA</strong> v1.5.3</div>
+            <div id="time">time</div>
+        </div>
+
+        <!-- Tabs -->
         <div class="tabs">
-            <div class="tab active" onclick="switchTab(0)">Statistics</div>
-            <div class="tab active" onclick="switchTab(1)">Guide</div>
-            <div class="tab active" onclick="switchTab(2)">Messages</div>
-	    <div class="tab active" onclick="switchTab(3)">Relations</div>
+            <div class="tab active" onclick="switchTab(0)">Guide</div>
+            <div class="tab" onclick="switchTab(1)">Relations</div>
         </div>
 
-        <!-- Guide Tab Content -->
-<div id="tab-1" class="content">
-    <div class="guide-container">
-        
-        <!-- LEFT: Categories -->
-        <div class="guide-left">
-            <strong>Notes</strong><br><br>
-            <div onclick="loadCategory('anomalies')" class="list-item active">Anomalies</div>
-            <div onclick="loadCategory('mutants')" class="list-item">Mutants</div>
-            <div onclick="loadCategory('factions')" class="list-item">Factions</div>
-            <div onclick="loadCategory('artefacts')" class="list-item">Artefacts</div>
-            <div onclick="loadCategory('achievements')" class="list-item">Achievements</div>
+        <!-- GUIDE TAB -->
+        <div id="tab-0" class="content">
+            <div class="guide-container">
+                <!-- Left -->
+                <div class="guide-left">
+                    <strong>Notes</strong><br><br>
+                    <div onclick="loadCategory('anomalies')" class="list-item active">Anomalies</div>
+                    <div onclick="loadCategory('mutants')" class="list-item">Mutants</div>
+                    <div onclick="loadCategory('factions')" class="list-item">Factions</div>
+                    <div onclick="loadCategory('artefacts')" class="list-item">Artefacts</div>
+                </div>
+
+                <!-- Middle -->
+                <div class="guide-middle" id="entries-list"></div>
+
+                <!-- Right -->
+                <div class="guide-right" id="entry-detail">
+                    <img src="" class="preview-img" id="detail-image">
+                    <strong id="detail-name"></strong><br>
+                    <small id="detail-type"></small>
+                    <p id="detail-desc"></p>
+                </div>
+            </div>
         </div>
 
-        <!-- MIDDLE: Dynamic Entries -->
-        <div class="guide-middle" id="entries-list">
-            <!-- Populated by JavaScript -->
-        </div>
+        <!-- RELATIONS TAB -->
+<div id="tab-1" class="content" style="display:none;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+        <h2 style="margin:0; color:#0f0;">Faction Relations</h2>
+        <label style="font-size:8px; color:#aaa; cursor:pointer;">
+        </label>
+    </div>
 
-        <!-- RIGHT: Detail View -->
-        <div class="guide-right" id="entry-detail">
-            <img src="" class="preview-img" id="detail-image" alt="">
-            <strong id="detail-name"></strong><br>
-            <small id="detail-type"></small>
-            <p id="detail-desc"></p>
-        </div>
+    <div style="overflow-x:auto;">
+        <table id="relationsTable" style="width:100%; border-collapse:collapse; font-size:13px; text-align:center;">
+            <thead>
+                <tr style="background:#111; color:#0f0;">
+                    <th style="padding:6px; border:1px solid #333; text-align:left;"></th>
+                    <th style="padding:6px; border:1px solid #333;">Loner</th>
+                    <th style="padding:6px; border:1px solid #333;">Duty</th>
+                    <th style="padding:6px; border:1px solid #333;">Freedom</th>
+                    <th style="padding:6px; border:1px solid #333;">Clear Sky</th>
+                    <th style="padding:6px; border:1px solid #333;">Ecologist</th>
+                    <th style="padding:6px; border:1px solid #333;">Mercenary</th>
+                    <th style="padding:6px; border:1px solid #333;">Military</th>
+                    <th style="padding:6px; border:1px solid #333;">Bandit</th>
+                    <th style="padding:6px; border:1px solid #333;">Monolith</th>
+                    <th style="padding:6px; border:1px solid #333;">Renegades</th>
+                    <th style="padding:6px; border:1px solid #333;">Sin</th>
+                    <th style="padding:6px; border:1px solid #333;">UNISG</th>
+                </tr>
+            </thead>
+            <tbody id="relationsBody">
+                <!-- rows will be generated by JS -->
+            </tbody>
+        </table>
     </div>
 </div>
 
     <script>
+        function switchTab(n) {
+            document.querySelectorAll('.content').forEach(el => el.style.display = 'none');
+            document.getElementById('tab-' + n).style.display = 'block';
+
+            document.querySelectorAll('.tab').forEach((tab, index) => {
+                tab.classList.toggle('active', index === n);
+            });
+        }
+
+        // === Guide Data & Functions (same as before) ===
         const data = {
-    anomalies: [
-        { name: "Burner", type: "Thermal", desc: "Creates intense heat that can ignite anything nearby.", img: "https://via.placeholder.com/500x280/ff8800/000?text=Burner" },
-        { name: "Electro", type: "Electrical", desc: "Discharges electricity when disturbed.", img: "https://via.placeholder.com/500x280/00aaff/000?text=Electro" },
-        { name: "Emission", type: "Global", desc: "Massive radiation blowout across the Zone.", img: "https://via.placeholder.com/500x280/aa0000/fff?text=Emission" },
-        { name: "Fruit Punch", type: "Chemical", desc: "Corrosive anomaly that dissolves organic matter.", img: "https://via.placeholder.com/500x280/ff00ff/000?text=Fruit+Punch" },
-        { name: "Liquid Gold", type: "Chemical", desc: "Raises body temperature to lethal levels.", img: "https://via.placeholder.com/500x280/ffcc00/000?text=Liquid+Gold" }
-    ],
-    mutants: [
-        { name: "Bloodsucker", type: "Mutant", desc: "Hematophagous predator with optic camouflage.", img: "https://via.placeholder.com/500x280/880000/fff?text=Bloodsucker" },
-        { name: "Boar", type: "Mutant", desc: "Aggressive mutated pig with tough hide.", img: "https://via.placeholder.com/500x280/664422/fff?text=Boar" }
-    ],
-    factions: [
-        { name: "Loners", type: "Faction", desc: "Independent stalkers surviving in the Zone.", img: "https://via.placeholder.com/500x280/888888/000?text=Loners" },
-        { name: "Duty", type: "Faction", desc: "Military-style group dedicated to destroying the Zone.", img: "https://via.placeholder.com/500x280/0044aa/fff?text=Duty" }
-    ],
-    artefacts: [
-        { name: "Moonlight", type: "Artefact", desc: "Found in Electro anomalies.", img: "https://via.placeholder.com/500x280/ccccff/000?text=Moonlight" }
-    ],
-    achievements: [
-        { name: "Mechanized Warfare", type: "Achievement", desc: "Learned field maintenance from technician.", img: "https://via.placeholder.com/500x280/00ff88/000?text=Achievement" }
-    ]
+            anomalies: [
+                { name: "Burner", 
+                  type: "Thermal", 
+                  desc: "The Burner can be a bit difficult to see, even in daylight, as it's only revealed by a faint heat haze. If the anomaly is triggered by either a living being or an object such as a metal bolt, it shoots out a tall pillar of flame in the air, burning everything in its vicinity.\n\nThough somewhat rare, the Burner anomaly is often found in clusters. Some clusters also emit an extremely high ambient temperature, which cooks anything in their vicinity. Burners can emit temperatures anywhere from 100 degrees Celsius to several thousand - hot enough to crack concrete and melt metal, which explains why some Burners appear in areas that have massive cracks and severely damaged soil, while other sites are untouched.\n\nBurners are very dangerous at high difficulties, and can be extremely dangerous even with top-tier armor. The Burners don't have a set spawn point like other anomalies do, or even a set trigger point. Simply being in the same vicinity can trigger a conflagration.", 
+                  img: "Assets/Anomalies/Burner.png" },
+
+                { name: "Electro", 
+                  type: "Electrical", 
+                  desc: "An anomalous formation, roughly 10 meters n diameter, containing quantities of static electricity. When triggered, the anomaly burts into a storm of arching electricity nearly always lethal to all living beings. Easily recognizable by the blue gas it emits, along with the endless arching of small bolts of electricity in the vicinity, the Electro holds no distinct for what crosses its event horizon - be it a himan, a mutants, or an inanimateobject, and discharges as soon as anything gets too close. \n\n The Electro is always in clusters and oftern ;located in tightly confined spaces, although clusters out int he open with a spacing of one meter or more between neighbouring Electros have been recorded. Thewy are easily avoided when outdoors, and at their most dangerous in confined areas. At Night, the Electro can be revealed using the Svarog detector or by throwing bolts into it, at which point it will discharge. In Call of Pripyat, any Electro tat discharges will form a chain reaction and discharge any neighbour, leading to the activation if the entire cluster. \n\n Its power and recharge rate could mean it is natural generator, much like thundercloud of lightning storm. Its power means a single Electro may be able to store a bare minimum of 5000 Volts of tension, all the way up to serveral hundred thousand, with a current in the hundreds or even thousands of amperes, enabling it to kill almost anything in the zone in just a few jolts. Lethality varies from game to game, with Call of Pripyat bearing the most dangeropus variants.", 
+                  img: "Assets/Anomalies/Electro.png" },
+
+                { name: "Emission",
+                  type: "Global", 
+                  desc: "Emmisions, also known as Blowouts, are sudden releases of massive amounts of radiation. \n\n Strong winds, storm clouds and a scarlet sky all appear with the onset of an emission followed by numerous eruptions of thunder and deep rumbling underfoot. \n\n  These events begin with a sharp surge in radioactive, abnormal and psychic activity - and end with the most destroying life in their wake as waves of radiation cover the zone. \n\n Despite being exremely deadly, it is still quite easi to survive an emission by taking cover within building or underground tunnels until the event has run its course. \n\n Much in the same way as psy-storm, the massive amount of energy released by an wemissin appears to ''recharge'' many anomalies, allowing stalkers to farm new artefacts for them.",
+                  img: "Assets/Anomalies/Emission.png" },
+                { name: "Fruit Punch",
+                  type: "Chemical-based",
+                  desc: "The Fruit Punch is a puddle of lambent green liquid that easily visible in almost any environment due to its bright glow, and disticttive hissing and bubbling noises. On contact with creatures or objects such as bolts, a Fruit Punch lights up brightly and emits a sharp hissing sound. It is extremely Corrosive, damaging creatures and objects on contact. Any matter left in a Fruit Punch will eventually dissolve, hinting at the anomaly's corrosive nature and spelling doom for any protective suit. For Players, contact with a Fruit Punch will cause damage with each 'flash'. This anomaly is commonly found underground. \n\n Concerning its characteristics, it is generaly accepted that it derives from the remnants of a highly radioactive spill of some reactive substance that gained its anomalous abilities from the Zone. Its corrosive properties are exhibited by its intense and rapid damage to all loving tissue and inorganic matter, metal and plastic alike. \n\n Owing to its ability to spawn artefacts in Shadow of Chernobyl, and not in Clear Sky, it coould be said that the last emission seen in Clear Sky desatbilized the Zone somewhat and dispersed the Gas Anomaly, repalcing it with the Fruit Punch instead. It's fairly common, occurring mostly in buildings and underground complexes, usually isolated spot. \n\n On a few occasions, both Fruit Punch and Gas Anomaliescan be found, and in ome cases they actually seem to merge together. Anomalousactivity and radiation combine to create a deadly blend of both corrosive liquid, directly damaging armor and equipmwnt, and a toxic cloud of poisonous gas that deals direct health and satmina damage. In Cal of Pripyat, the Fruit Punch by itself can only be found very rarely, and as per the norm, only in closed or cofined areas.",
+                  img: "Assets/Anomalies/FruitPunch.png},
+            ],
+            mutants: [
+                { name: "Bloodsucker", type: "Mutant", desc: "Hematophagous predator.", img: "" },
+            ],
+            factions: [
+                { name: "Loners", type: "Faction", desc: "Independent stalkers.", img: "" },
+            ],
+            artefacts: [
+                { name: "Moonlight", type: "Artefact", desc: "Found in Electro anomalies.", img: "" },
+            ]
+        };
+
+        function loadCategory(cat) {
+            document.querySelectorAll('.guide-left .list-item').forEach(item => item.classList.remove('active'));
+            event.currentTarget.classList.add('active');   // Highlight clicked category
+
+            const list = document.getElementById('entries-list');
+            list.innerHTML = '';
+
+            data[cat].forEach(entry => {
+                const div = document.createElement('div');
+                div.className = 'list-item';
+                div.textContent = entry.name;
+                div.onclick = () => showDetail(entry);
+                list.appendChild(div);
+            });
+
+            if (data[cat].length > 0) showDetail(data[cat][0]);
+        }
+
+        function showDetail(entry) {
+            document.getElementById('detail-image').src = entry.img;
+            document.getElementById('detail-name').textContent = entry.name;
+            document.getElementById('detail-type').textContent = "Type: " + entry.type;
+            document.getElementById('detail-desc').textContent = entry.desc;
+        }
+
+        // Start with Anomalies
+        window.onload = () => loadCategory('anomalies');
+// ========== FACTION RELATIONS DATA ==========
+// Edit this object to change any relation
+const relationsData = {
+    "Loner": {
+        "Loner": "Neutral",
+        "Duty": "Neutral",
+        "Freedom": "Neutral",
+        "Clear Sky": "Neutral",
+        "Ecologist": "Neutral",
+        "Mercenary": "Enemy",
+        "Military": "Enemy",
+        "Bandit": "Enemy",
+        "Monolith": "Enemy",
+        "Renegades": "Enemy",
+        "Sin": "Enemy",
+        "UNISG": "Enemy"
+    },
+    "Duty": {
+        "Loner": "Neutral",
+        "Duty": "Neutral",
+        "Freedom": "Enemy",
+        "Clear Sky": "Enemy",
+        "Ecologist": "Neutral",
+        "Mercenary": "Enemy",
+        "Military": "Neutral",
+        "Bandit": "Enemy",
+        "Monolith": "Enemy",
+        "Renegades": "Enemy",
+        "Sin": "Enemy",
+        "UNISG": "Enemy"
+    },
+    "Freedom": {
+        "Loner": "Neutral",
+        "Duty": "Enemy",
+        "Freedom": "Neutral",
+        "Clear Sky": "Neutral",
+        "Ecologist": "Neutral",
+        "Mercenary": "Neutral",
+        "Military": "Enemy",
+        "Bandit": "Neutral",
+        "Monolith": "Enemy",
+        "Renegades": "Enemy",
+        "Sin": "Enemy",
+        "UNISG": "Enemy"
+    },
+    "Clear Sky": {
+        "Loner": "Neutral",
+        "Duty": "Enemy",
+        "Freedom": "Neutral",
+        "Clear Sky": "Neutral",
+        "Ecologist": "Neutral",
+        "Mercenary": "Neutral",
+        "Military": "Enemy",
+        "Bandit": "Enemy",
+        "Monolith": "Enemy",
+        "Renegades": "Enemy",
+        "Sin": "Enemy",
+        "UNISG": "Enemy"
+    },
+    "Ecologist": {
+        "Loner": "Neutral",
+        "Duty": "Neutral",
+        "Freedom": "Neutral",
+        "Clear Sky": "Neutral",
+        "Ecologist": "Neutral",
+        "Mercenary": "Neutral",
+        "Military": "Neutral",
+        "Bandit": "Enemy",
+        "Monolith": "Enemy",
+        "Renegades": "Enemy",
+        "Sin": "Enemy",
+        "UNISG": "Enemy"
+    },
+    "Mercenary": {
+        "Loner": "Enemy",
+        "Duty": "Enemy",
+        "Freedom": "Neutral",
+        "Clear Sky": "Neutral",
+        "Ecologist": "Neutral",
+        "Mercenary": "Neutral",
+        "Military": "Enemy",
+        "Bandit": "Neutral",
+        "Monolith": "Enemy",
+        "Renegades": "Enemy",
+        "Sin": "Enemy",
+        "UNISG": "Neutral"
+    },
+    "Military": {
+        "Loner": "Enemy",
+        "Duty": "Neutral",
+        "Freedom": "Enemy",
+        "Clear Sky": "Enemy",
+        "Ecologist": "Neutral",
+        "Mercenary": "Enemy",
+        "Military": "Neutral",
+        "Bandit": "Enemy",
+        "Monolith": "Enemy",
+        "Renegades": "Enemy",
+        "Sin": "Enemy",
+        "UNISG": "Enemy"
+    },
+    "Bandit": {
+        "Loner": "Enemy",
+        "Duty": "Enemy",
+        "Freedom": "Neutral",
+        "Clear Sky": "Enemy",
+        "Ecologist": "Enemy",
+        "Mercenary": "Neutral",
+        "Military": "Enemy",
+        "Bandit": "Neutral",
+        "Monolith": "Enemy",
+        "Renegades": "Neutral",
+        "Sin": "Enemy",
+        "UNISG": "Enemy"
+    },
+    "Monolith": {
+        "Loner": "Enemy",
+        "Duty": "Enemy",
+        "Freedom": "Enemy",
+        "Clear Sky": "Enemy",
+        "Ecologist": "Enemy",
+        "Mercenary": "Enemy",
+        "Military": "Enemy",
+        "Bandit": "Enemy",
+        "Monolith": "Friend",
+        "Renegades": "Enemy",
+        "Sin": "Neutral",
+        "UNISG": "Enemy"
+    },
+    "Renegades": {
+        "Loner": "Enemy",
+        "Duty": "Enemy",
+        "Freedom": "Enemy",
+        "Clear Sky": "Enemy",
+        "Ecologist": "Enemy",
+        "Mercenary": "Enemy",
+        "Military": "Enemy",
+        "Bandit": "Neutral",
+        "Monolith": "Enemy",
+        "Renegades": "Neutral",
+        "Sin": "Enemy",
+        "UNISG": "Enemy"
+    },
+    "Sin": {
+        "Loner": "Enemy",
+        "Duty": "Enemy",
+        "Freedom": "Enemy",
+        "Clear Sky": "Enemy",
+        "Ecologist": "Enemy",
+        "Mercenary": "Enemy",
+        "Military": "Enemy",
+        "Bandit": "Enemy",
+        "Monolith": "Neutral",
+        "Renegades": "Enemy",
+        "Sin": "Neutral",
+        "UNISG": "Enemy"
+    },
+    "UNISG": {
+        "Loner": "Enemy",
+        "Duty": "Enemy",
+        "Freedom": "Enemy",
+        "Clear Sky": "Enemy",
+        "Ecologist": "Enemy",
+        "Mercenary": "Neutral",
+        "Military": "Enemy",
+        "Bandit": "Enemy",
+        "Monolith": "Enemy",
+        "Renegades": "Enemy",
+        "Sin": "Enemy",
+        "UNISG": "Neutral"
+    }
 };
 
-function loadCategory(category) {
-    // Highlight active category
-    document.querySelectorAll('.guide-left .list-item').forEach(item => {
-        item.classList.remove('active');
-        if (item.textContent.toLowerCase() === category) item.classList.add('active');
-    });
+const factions = [
+    "Loner", "Duty", "Freedom", "Clear Sky",
+    "Ecologist", "Mercenary", "Military", 
+    "Bandit", "Monolith", "Renegades", "Sin", "UNISG"
+];
 
-    const list = document.getElementById('entries-list');
-    list.innerHTML = '';
-
-    data[category].forEach(entry => {
-        const div = document.createElement('div');
-        div.className = 'list-item';
-        div.textContent = entry.name;
-        div.onclick = () => showDetail(entry);
-        list.appendChild(div);
-    });
-
-    // Show first item automatically
-    if (data[category].length > 0) showDetail(data[category][0]);
+function getRelClass(value) {
+    const v = value.toLowerCase();
+    if (["maximal", "major", "friend"].includes(v)) return "rel-max";
+    if (["moderate", "minor", "neutral"].includes(v)) return "rel-moderate";
+    return "rel-enemy"; // minimal / enemy
 }
 
-function showDetail(entry) {
-    document.getElementById('detail-image').src = entry.img;
-    document.getElementById('detail-name').textContent = entry.name;
-    document.getElementById('detail-type').textContent = "Type: " + entry.type;
-    document.getElementById('detail-desc').textContent = entry.desc;
+function buildRelationsTable() {
+    const tbody = document.getElementById("relationsBody");
+    tbody.innerHTML = "";
+
+    factions.forEach(rowFaction => {
+        const tr = document.createElement("tr");
+
+        // Row header
+        const th = document.createElement("td");
+        th.textContent = rowFaction;
+        tr.appendChild(th);
+
+        // Cells
+        factions.forEach(colFaction => {
+            const td = document.createElement("td");
+            const value = relationsData[rowFaction][colFaction] || "Neutral";
+            td.textContent = value;
+            td.className = getRelClass(value);
+            tr.appendChild(td);
+        });
+
+        tbody.appendChild(tr);
+    });
 }
 
-// Load Anomalies by default when page loads
-window.onload = () => loadCategory('anomalies');
+function toggleValues() {
+    const show = document.getElementById("showValues").checked;
+    document.querySelectorAll("#relationsTable td:not(:first-child)").forEach(td => {
+        td.style.color = show ? "" : "transparent";
+    });
+}
+
+// Call this when the Relations tab is opened (or just on load)
+document.addEventListener("DOMContentLoaded", () => {
+    buildRelationsTable();
+});
+// Live clock
+function updateTime() {
+    const now = new Date();
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    document.getElementById('time').textContent = `${hours}:${minutes}`;
+}
+
+// Update immediately and then every second
+updateTime();
+setInterval(updateTime, 1000);
     </script>
 </body>
 </html>
